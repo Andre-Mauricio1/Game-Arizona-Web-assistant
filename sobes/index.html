@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Админ-панель</title>
+    <link rel="stylesheet" href="style1.css" />
+</head>
+<body>
+    <div class="wrapper">
+        <!-- ===== ЛЕВОЕ МЕНЮ ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <span class="logo">⚡</span>
+                <span>Admins</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="sidebar-link">👥 Администрация</a>
+                <a href="#" class="sidebar-link">🟢 Онлайн</a>
+                <a href="/interview" class="sidebar-link is-active">☕ Собеседование</a> <!-- ← активная вкладка -->
+                <a href="#" class="sidebar-link">☕ Неактив</a>
+                <a href="#" class="sidebar-link">🏪 Магазин</a>
+            </nav>
+            <div class="sidebar-profile">
+                <div class="avatar">👤</div>
+                <div>
+                    <div class="profile-name">Andre_Mauricio</div>
+                    <div class="profile-role">Хелпер</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
+        <main class="content">
+            <!-- ===== ОКНО СОБЕСЕДОВАНИЯ ===== -->
+            <div class="interview-card">
+                <h2 class="interview-title">Собеседование</h2>
+
+                <!-- ===== ПОЛЯ ДЛЯ ЗАПОЛНЕНИЯ ===== -->
+                <form class="interview-form" action="/add_sobes" method="get">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>ID</label>
+                            <input type="text" name="id" placeholder="123" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Никнейм</label>
+                            <input type="text" name="username" placeholder="Andre_Mauricio" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Ранг</label>
+                            <input type="number" name="rang" placeholder="5" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Фракция</label>
+                            <input type="text" name="fraction" placeholder="Полиция" required />
+                        </div>
+                        <!-- ===== УРОВЕНЬ УБРАН ===== -->
+                        <div class="form-group">
+                            <label>Дата и время</label>
+                            <input type="text" name="data_time" value="2026-08-15 16:00:00" readonly />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-register">➕ Зарегистрировать собеседование</button>
+                </form>
+            </div>
+
+            <!-- ===== БЛОК ОЦЕНКИ ===== -->
+            <div class="score-card">
+                <h3 class="score-title">Оценка ответа</h3>
+                <div class="score-question">Вопрос: <span>Что такое деморган?</span></div>
+
+                <div class="score-buttons">
+                    <button class="score-btn score-red">0 — красный</button>
+                    <button class="score-btn score-yellow">0.5 — жёлтый</button>
+                    <button class="score-btn score-green">1 — зелёный</button>
+                </div>
+
+                <div class="score-nick">
+                    <span>Ник: <strong>Andre_Mauricio</strong></span>
+                </div>
+
+                <div class="score-actions">
+                    <button class="action-btn">➡️ Следующий вопрос</button>
+                    <button class="action-btn">👤 Следующий кандидат</button>
+                    <button class="action-btn">❌ Отмена</button>
+                    <button class="action-btn success">✅ Завершить собеседование</button>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

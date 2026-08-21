@@ -4,9 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Админ-панель</title>
-    <link rel="stylesheet" href="style1.css" />
+    <link rel="stylesheet" href="/shared screen/style.css" />
 </head>
 <body>
+<!-- DEBUG: Версия от 21.08.2026 19:00 -->
     <div class="wrapper">
         <!-- ===== ЛЕВОЕ МЕНЮ ===== -->
         <aside class="sidebar">
@@ -17,8 +18,8 @@
             <nav class="sidebar-nav">
                 <a href="#" class="sidebar-link">👥 Администрация</a>
                 <a href="#" class="sidebar-link">🟢 Онлайн</a>
-                <a href="/interview" class="sidebar-link is-active">☕ Собеседование</a> <!-- ← активная вкладка -->
-                <a href="#" class="sidebar-link">☕ Неактив</a>
+                <a href="/interview" class="sidebar-link is-active">☕ Собеседование</a>
+                <a href="#" class="sidebar-link">⏸️ Неактив</a>
                 <a href="#" class="sidebar-link">🏪 Магазин</a>
             </nav>
             <div class="sidebar-profile">
@@ -37,7 +38,7 @@
                 <h2 class="interview-title">Собеседование</h2>
 
                 <!-- ===== ПОЛЯ ДЛЯ ЗАПОЛНЕНИЯ ===== -->
-                <form class="interview-form" action="/add_sobes" method="get">
+                <form class="interview-form" action="/add_sobes" method="post">
                     <div class="form-grid">
                         <div class="form-group">
                             <label>ID</label>
@@ -55,10 +56,10 @@
                             <label>Фракция</label>
                             <input type="text" name="fraction" placeholder="Полиция" required />
                         </div>
-                        <!-- ===== УРОВЕНЬ УБРАН ===== -->
                         <div class="form-group">
                             <label>Дата и время</label>
-                            <input type="text" name="data_time" value="2026-08-15 16:00:00" readonly />
+                            <!-- 👇 ИСПРАВЛЕНО -->
+                            <input type="datetime-local" name="time" value="2026-08-15T16:00" required />
                         </div>
                     </div>
 
@@ -72,9 +73,9 @@
                 <div class="score-question">Вопрос: <span>Что такое деморган?</span></div>
 
                 <div class="score-buttons">
-                    <button class="score-btn score-red">0 — красный</button>
-                    <button class="score-btn score-yellow">0.5 — жёлтый</button>
-                    <button class="score-btn score-green">1 — зелёный</button>
+                    <button class="score-btn score-red">0</button>
+                    <button class="score-btn score-yellow">0.5</button>
+                    <button class="score-btn score-green">1</button>
                 </div>
 
                 <div class="score-nick">

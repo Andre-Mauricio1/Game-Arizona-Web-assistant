@@ -1,15 +1,8 @@
 from uuid import uuid4
-import fastapi
-from fastapi import *
-from pip._internal.resolution.resolvelib import candidates
 from pydantic import BaseModel
-from uvicorn import *
-from dotenv import load_dotenv
 from datetime import datetime
-import os
+from typing import List, Optional
 
-
-app = FastAPI()
 
 class User(BaseModel):
     id: str
@@ -34,17 +27,18 @@ class Users_Patch(BaseModel):
 users: list[User] = []
 
 
-@app.get("/")
+
 async def window():
+    print('Users ', users)
     return users
 
-@app.post('/users')
+
 async def users_post(payload: Users_Post) -> User:
     new_user = User(id=str(uuid4()), username=payload.username, rang=payload.rang, lvl=0, fraction=payload.fraction, data_time=payload.time)
     users.append(new_user)
     return new_user
 
-@app.patch('/users/{user_id}')
+
 async def users_patch(payload: Users_Patch, user_id: str):
     for user in users:
         if user.id == str(user_id):
@@ -56,22 +50,22 @@ async def users_patch(payload: Users_Patch, user_id: str):
                 user.fraction = payload.fraction
 
 
-@app.post("/question/{name}")
-async def question_func(self) -> dict:
 
-    load_dotenv()
-    question_all = os.getenv('question')
+# async def question_func(self) -> dict:
+#
+#     load_dotenv()
+#     question_all = os.getenv('question')
+#
+#     if self.username not in candidates:
+#         raise fastapi.HTTPException(status_code=400, detail=f"There is no such candidate. {self.candidates.items()}")
+#
+#     if question_all is None:
+#         raise fastapi.HTTPException(status_code=400, detail="Question is required")
+#
+#     for question in question_all:
+#         pass
 
-    if self.username not in candidates:
-        raise fastapi.HTTPException(status_code=400, detail=f"There is no such candidate. {self.candidates.items()}")
 
-    if question_all is None:
-        raise fastapi.HTTPException(status_code=400, detail="Question is required")
-
-    for question in question_all:
-        pass
-
-
-
-if __name__ == '__main__':
-    run(app=app)
+#
+# if __name__ == '__main__':
+#     run(app=app)

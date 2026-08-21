@@ -34,11 +34,11 @@ async def question_func_get():
     print(question1)
     return question, question1 #, question_super
 
-@app.get('/questions')
+
 async def main():
     return await question_func_get()
 
-@app.post('/question')
+
 async def add_question(payload: ADD_Question):
     quest, quest1 = await question_func_get()
     if payload.lvl >= 1:

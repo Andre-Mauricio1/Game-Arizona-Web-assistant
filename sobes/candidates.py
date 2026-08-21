@@ -29,17 +29,20 @@ users: list[User] = []
 
 
 async def window():
+    """Возращение списка users"""
     print('Users ', users)
     return users
 
 
 async def users_post(payload: Users_Post) -> User:
+    """Добавление пользователей через main Form"""
     new_user = User(id=str(uuid4()), username=payload.username, rang=payload.rang, lvl=0, fraction=payload.fraction, data_time=payload.time)
     users.append(new_user)
     return new_user
 
 
 async def users_patch(payload: Users_Patch, user_id: str):
+    """Изменение ника, ранга, фракции, можно выбирать один из этих"""
     for user in users:
         if user.id == str(user_id):
             if payload.username is not None:
@@ -48,24 +51,3 @@ async def users_patch(payload: Users_Patch, user_id: str):
                 user.rang = payload.rang
             if payload.fraction is not None:
                 user.fraction = payload.fraction
-
-
-
-# async def question_func(self) -> dict:
-#
-#     load_dotenv()
-#     question_all = os.getenv('question')
-#
-#     if self.username not in candidates:
-#         raise fastapi.HTTPException(status_code=400, detail=f"There is no such candidate. {self.candidates.items()}")
-#
-#     if question_all is None:
-#         raise fastapi.HTTPException(status_code=400, detail="Question is required")
-#
-#     for question in question_all:
-#         pass
-
-
-#
-# if __name__ == '__main__':
-#     run(app=app)

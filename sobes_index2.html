@@ -1,10 +1,151 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель - Оценка</title>
+    <link rel="stylesheet" href="static/style.css" />
 </head>
 <body>
-$END$
+    <div class="wrapper">
+        <!-- ===== ЛЕВОЕ МЕНЮ ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <span class="logo">⚡</span>
+                <span>Admins</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="sidebar-link">👥 Администрация</a>
+                <a href="#" class="sidebar-link">🟢 Онлайн</a>
+                <a href="/interview" class="sidebar-link is-active">☕ Собеседование</a>
+                <a href="#" class="sidebar-link">⏸️ Неактив</a>
+                <a href="#" class="sidebar-link">🏪 Магазин</a>
+            </nav>
+            <div class="sidebar-profile">
+                <div class="avatar">👤</div>
+                <div>
+                    <div class="profile-name">Andre_Mauricio</div>
+                    <div class="profile-role">Хелпер</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
+        <main class="content">
+            <!-- ===== КАРТОЧКА КАНДИДАТА ===== -->
+            <div class="interview-card">
+                <h2 class="interview-title">👤 Кандидат</h2>
+                <form class="interview-form" action="/add_sobes/users" method="post">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Никнейм кандидата</label>
+                            <input type="text" name="username" placeholder="Введите никнейм" required />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-register">➕ Добавить кандидата</button>
+                </form>
+            </div>
+
+            <!-- ===== БЛОК ОЦЕНКИ ===== -->
+            <div class="score-card">
+                <h3 class="score-title">📊 Оценка ответа</h3>
+
+                <div class="score-question">
+                    Вопрос: <span>Что такое деморган?</span>
+                </div>
+
+                <div class="score-buttons">
+                    <button class="score-btn score-red">0</button>
+                    <button class="score-btn score-yellow">0.5</button>
+                    <button class="score-btn score-green">1</button>
+                </div>
+
+                <div class="score-nick">
+                    👤 Ник: <strong>Andre_Mauricio</strong>
+                </div>
+
+                <div class="score-actions">
+                    <button class="action-btn">➡️ Следующий вопрос</button>
+                    <button class="action-btn">👤 Следующий кандидат</button>
+                    <button class="action-btn danger">❌ Отмена</button>
+                    <button class="action-btn success">✅ Завершить собеседование</button>
+                </div>
+            </div>
+
+            <!-- ===== ТАБЛИЦА КАНДИДАТОВ ===== -->
+            <div class="table-wrapper">
+                <h3 class="table-title">📋 Список кандидатов</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Никнейм</th>
+                            <th>Ранг</th>
+                            <th>Фракция</th>
+                            <th>Дата</th>
+                            <th>Статус</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Andre_Mauricio</td>
+                            <td>5</td>
+                            <td>Полиция</td>
+                            <td>2026-08-15 16:00</td>
+                            <td><span class="status-badge status-active">✅ Активен</span></td>
+                            <td>
+                                <form action="/add_sobes/users" method="patch" style="display:inline;">
+                                    <input type="hidden" name="user_id" value="1" />
+                                    <button type="submit" class="action-btn edit-btn">✏️</button>
+                                </form>
+                                <form action="/add_sobes/users" method="delete" style="display:inline;">
+                                    <input type="hidden" name="user_id" value="1" />
+                                    <button type="submit" class="action-btn danger">🗑️</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Sebastian_Disney</td>
+                            <td>7</td>
+                            <td>ФБР</td>
+                            <td>2026-08-14 14:30</td>
+                            <td><span class="status-badge status-waiting">⏳ Ожидает</span></td>
+                            <td>
+                                <form action="/add_sobes/users" method="patch" style="display:inline;">
+                                    <input type="hidden" name="user_id" value="2" />
+                                    <button type="submit" class="action-btn edit-btn">✏️</button>
+                                </form>
+                                <form action="/add_sobes/users" method="delete" style="display:inline;">
+                                    <input type="hidden" name="user_id" value="2" />
+                                    <button type="submit" class="action-btn danger">🗑️</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Don_Morrison</td>
+                            <td>6</td>
+                            <td>Медицина</td>
+                            <td>2026-08-13 12:00</td>
+                            <td><span class="status-badge status-completed">✅ Завершен</span></td>
+                            <td>
+                                <form action="/add_sobes/users" method="patch" style="display:inline;">
+                                    <input type="hidden" name="user_id" value="3" />
+                                    <button type="submit" class="action-btn edit-btn">✏️</button>
+                                </form>
+                                <form action="/add_sobes/users" method="delete" style="display:inline;">
+                                    <input type="hidden" name="user_id" value="3" />
+                                    <button type="submit" class="action-btn danger">🗑️</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
 </body>
 </html>

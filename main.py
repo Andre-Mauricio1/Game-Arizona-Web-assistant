@@ -21,7 +21,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/")
 async def responce_file():
     """Возращает главное окно приложение"""
-    return FileResponse("shared screen/index.html")
+    return FileResponse(r"C:\Users\админ\PycharmProjects\PythonProject2\index.html")
 
 @app.get('/admins')
 async def admins():
@@ -33,9 +33,9 @@ async def onlines():
     """В будущем принаджелит удалению из-за бесполезности этой функции"""
     return {'Online': "players" } # Заполнить FileResponce
 
+# /interview
 
-
-async def interview_File_Response(data_path: str) -> FileResponse:
+async def File_Response1(data_path: str) -> FileResponse:
     """1. Проверка файла, при его отсутствии возращает ошибку 404 (File not found), если этот файл есть,
     то мы возращаем FileResponse, в котором находится расположенный файл (будущая ссылка)"""
     path = Path(data_path)
@@ -46,19 +46,19 @@ async def interview_File_Response(data_path: str) -> FileResponse:
 @app.get('/interview')
 async def interview() -> FileResponse:
     """2. Возращаем функцию, но туда вставляем ссылку """
-    return await interview_File_Response(r'C:\Users\админ\PycharmProjects\PythonProject2\sobes\sobes_index.html')
+    return await File_Response1(r'C:\Users\админ\PycharmProjects\PythonProject2\sobes_index.html')
 
 @app.post('/add_sobes')
 async def add_sobes(username: str = Form(...),rang: int = Form(...),fraction: str = Form(...),time: str = Form(...)):
     """Обработка post запроса, работает вместе с функцией users_post и с классом Users_Post в файле candidates.py,
     создаем переменную, туда мы закидываем из класса поля присваивая параметры функции,
      потом мы создаем новую переменную и присваиваем асинхронную функцию, после этого возращаем эту переменную"""
-    from sobes.candidates import users_post, Users_Post
+    from candidates import users_post, Users_Post
 
     payload = Users_Post(username=username, rang=rang, fraction=fraction, time=time)
     result = await users_post(payload)
     print(result)
-    return result
+    return await File_Response1(r'C:\Users\админ\PycharmProjects\PythonProject2\sobes_index2.html')
 #
 # async def add_sobes_file_responce(date_path: str) -> FileResponse:
 #     """1. Проверка файла, при его отсутствии возращает ошибку 404 (File not found), если этот файл есть,
@@ -71,7 +71,7 @@ async def add_sobes(username: str = Form(...),rang: int = Form(...),fraction: st
 @app.get('/add_sobes')
 async def users():
     """возращаем юзеров"""
-    from sobes.candidates import users
+    from candidates import users
     print(users)
     return users
 

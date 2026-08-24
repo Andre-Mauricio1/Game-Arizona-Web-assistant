@@ -24,6 +24,10 @@ class Users_Patch(BaseModel):
     fraction: str | None = None
 
 
+
+class add_candidates_post(BaseModel):
+    username: str
+
 users: list[User] = []
 
 
@@ -41,6 +45,12 @@ async def users_post(payload: Users_Post) -> User:
     return new_user
 
 
+async def users_add(payload: add_candidates_post) -> User:
+    """Добавление в табоицу кандидатов"""
+    new_user = User(id=str(uuid4()),username=payload.username,rang=0,lvl=0,fraction="Не указано",data_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    users.append(new_user)
+    return new_user
+
 async def users_patch(payload: Users_Patch, user_id: str):
     """Изменение ника, ранга, фракции, можно выбирать один из этих"""
     for user in users:
@@ -51,3 +61,5 @@ async def users_patch(payload: Users_Patch, user_id: str):
                 user.rang = payload.rang
             if payload.fraction is not None:
                 user.fraction = payload.fraction
+            return user
+    return None

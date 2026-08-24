@@ -1,4 +1,4 @@
-
+import fractions
 from http.client import HTTPException
 from uuid import uuid4
 
@@ -10,6 +10,10 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 import os
 from pathlib import Path
+
+import candidates
+from candidates import Users_Post
+
 app = fastapi.FastAPI()
 
 
@@ -59,6 +63,25 @@ async def add_sobes(username: str = Form(...),rang: int = Form(...),fraction: st
     result = await users_post(payload)
     print(result)
     return await File_Response1(r'C:\Users\админ\PycharmProjects\PythonProject2\sobes_index2.html')
+
+@app.post('/add_sobes/users')
+async def add_sobes(username: str = Form(...)) -> FileResponse:
+    from candidates import add_candidates_post, users_add
+
+    payload = add_candidates_post(username=username)
+    result = await users_add(payload)
+    print("result")
+    return await File_Response1(r'C:\Users\админ\PycharmProjects\PythonProject2\sobes_index2.html')
+
+
+@app.patch('/add_sobes/users/{user_id}')
+async def user_patch(payload: candidates.Users_Patch, user_id:str):
+    """Изменение ника, ранга, фракции, можно выбирать один из этих"""
+
+    return await candidates.users_patch(payload,user_id=user_id)
+
+
+
 #
 # async def add_sobes_file_responce(date_path: str) -> FileResponse:
 #     """1. Проверка файла, при его отсутствии возращает ошибку 404 (File not found), если этот файл есть,

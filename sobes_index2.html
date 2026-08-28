@@ -52,24 +52,25 @@
                 <h3 class="score-title">📊 Оценка ответа</h3>
 
                 <div class="score-question">
-                    Вопрос: <span>Что такое деморган?</span>
+                    Вопрос: <span id="question-text">Что такое деморган?</span>
                 </div>
 
                 <div class="score-buttons">
-                    <button class="score-btn score-red">0</button>
-                    <button class="score-btn score-yellow">0.5</button>
-                    <button class="score-btn score-green">1</button>
+                    <button class="score-btn score-red" data-score="0" onclick="sendScore(0)">0</button>
+                    <button class="score-btn score-yellow" data-score="0.5" onclick="sendScore(0.5)">0.5</button>
+                    <button class="score-btn score-green" data-score="1" onclick="sendScore(1)">1</button>
                 </div>
 
                 <div class="score-nick">
-                    👤 Ник: <strong>Andre_Mauricio</strong>
+                    👤 Ник: <strong id="current-candidate">Andre_Mauricio</strong>
+                    <span id="score-display" style="margin-left: 20px; color: #58a6ff;">Оценка: —</span>
                 </div>
 
                 <div class="score-actions">
-                    <button class="action-btn">➡️ Следующий вопрос</button>
-                    <button class="action-btn">👤 Следующий кандидат</button>
-                    <button class="action-btn danger">❌ Отмена</button>
-                    <button class="action-btn success">✅ Завершить собеседование</button>
+                    <button class="action-btn" onclick="nextQuestion()">➡️ Следующий вопрос</button>
+                    <button class="action-btn" onclick="nextCandidate()">👤 Следующий кандидат</button>
+                    <button class="action-btn danger" onclick="cancelInterview()">❌ Отмена</button>
+                    <button class="action-btn success" onclick="finishInterview()">✅ Завершить собеседование</button>
                 </div>
             </div>
 
@@ -84,6 +85,7 @@
                             <th>Ранг</th>
                             <th>Фракция</th>
                             <th>Дата</th>
+                            <th>Баллы</th>
                             <th>Статус</th>
                             <th>Действия</th>
                         </tr>
@@ -95,6 +97,7 @@
                             <td>5</td>
                             <td>Полиция</td>
                             <td>2026-08-15 16:00</td>
+                            <td class="score-cell">—</td>
                             <td><span class="status-badge status-active">✅ Активен</span></td>
                             <td>
                                 <button class="action-btn edit-btn" data-id="1" data-action="edit">✏️</button>
@@ -107,6 +110,7 @@
                             <td>7</td>
                             <td>ФБР</td>
                             <td>2026-08-14 14:30</td>
+                            <td class="score-cell">—</td>
                             <td><span class="status-badge status-waiting">⏳ Ожидает</span></td>
                             <td>
                                 <button class="action-btn edit-btn" data-id="2" data-action="edit">✏️</button>
@@ -119,6 +123,7 @@
                             <td>6</td>
                             <td>Медицина</td>
                             <td>2026-08-13 12:00</td>
+                            <td class="score-cell">—</td>
                             <td><span class="status-badge status-completed">✅ Завершен</span></td>
                             <td>
                                 <button class="action-btn edit-btn" data-id="3" data-action="edit">✏️</button>
@@ -131,131 +136,146 @@
         </main>
     </div>
 
-    <!-- ===== JAVASCRIPT ПОЛНОСТЬЮ ===== -->
     <script>
-        // ============================================
-        // 1. ДОБАВЛЕНИЕ КАНДИДАТА (POST)
-        // ============================================
-        document.querySelector('.interview-form').addEventListener('submit', async function (e) {
-            e.preventDefault();
+        // ===== 1. КНОПКИ ОЦЕНОК (GET-ЗАПРОС) =====
+        let currentScore = null;
+        let currentCandidateName = 'Andre_Mauricio';
 
-            const form = this;
-            const formData = new FormData(form);
-            const username = formData.get('username');
+        function sendScore(score) {
+            currentScore = score;
+            document.getElementById('score-display').textContent = `Оценка: ${score}`;
 
-            if (!username.trim()) return;
+            // Подсветка кнопки
+            document.querySelectorAll('.score-btn').forEach(b => {
+                b.style.outline = 'none';
+                b.style.boxShadow = 'none';
+            });
+            document.querySelector(`.score-btn[data-score="${score}"]`).style.outline = '3px solid #58a6ff';
 
-            try {
-                const res = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData
+            // ===== ОТПРАВЛЯЕМ GET-ЗАПРОС =====
+            const candidate = document.getElementById('current-candidate').textContent;
+            fetch(`/add_sobes/score?candidate=${encodeURIComponent(candidate)}&score=${score}`, {
+                method: 'GET'
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Ошибка сервера');
+                return res.json();
+            })
+            .then(data => {
+                console.log('✅ Оценка отправлена:', data);
+                showNotification(`✅ Оценка ${score} отправлена!`, 'success');
+            })
+            .catch(err => {
+                console.error('❌ Ошибка:', err);
+                showNotification('❌ Ошибка при отправке оценки', 'error');
+            });
+        }
+
+        // ===== 2. ВОПРОСЫ =====
+        const questions = ['Что такое деморган?', 'Какие бывают фракции?', 'Как выдать варн?'];
+        let qIndex = 0;
+
+        function nextQuestion() {
+            qIndex = (qIndex + 1) % questions.length;
+            document.getElementById('question-text').textContent = questions[qIndex];
+            currentScore = null;
+            document.getElementById('score-display').textContent = 'Оценка: —';
+            document.querySelectorAll('.score-btn').forEach(b => {
+                b.style.outline = 'none';
+                b.style.boxShadow = 'none';
+            });
+        }
+
+        // ===== 3. КАНДИДАТЫ =====
+        const candidates = ['Andre_Mauricio', 'Sebastian_Disney', 'Don_Morrison'];
+        let cIndex = 0;
+
+        function nextCandidate() {
+            cIndex = (cIndex + 1) % candidates.length;
+            currentCandidateName = candidates[cIndex];
+            document.getElementById('current-candidate').textContent = currentCandidateName;
+            currentScore = null;
+            document.getElementById('score-display').textContent = 'Оценка: —';
+            document.querySelectorAll('.score-btn').forEach(b => {
+                b.style.outline = 'none';
+                b.style.boxShadow = 'none';
+            });
+        }
+
+        // ===== 4. ОТМЕНА =====
+        function cancelInterview() {
+            if (confirm('Отменить собеседование?')) {
+                currentScore = null;
+                document.getElementById('score-display').textContent = 'Оценка: —';
+                document.querySelectorAll('.score-btn').forEach(b => {
+                    b.style.outline = 'none';
+                    b.style.boxShadow = 'none';
                 });
 
-                if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.detail || 'Ошибка сервера');
-                }
-
-                const user = await res.json();
-
-                const tbody = document.getElementById('candidates-body');
-                const row = document.createElement('tr');
-                const now = new Date().toLocaleString();
-                const newId = tbody.children.length + 1;
-
-                row.innerHTML = `
-                    <td>${newId}</td>
-                    <td>${user.username || username}</td>
-                    <td>—</td>
-                    <td>—</td>
-                    <td>${now}</td>
-                    <td><span class="status-badge status-waiting">⏳ Ожидает</span></td>
-                    <td>
-                        <button class="action-btn edit-btn" data-id="${newId}" data-action="edit">✏️</button>
-                        <button class="action-btn danger" data-id="${newId}" data-action="delete">🗑️</button>
-                    </td>
-                `;
-
-                tbody.appendChild(row);
-                form.querySelector('input[name="username"]').value = '';
-
-                // Показываем уведомление
-                showNotification('✅ Кандидат добавлен!', 'success');
-
-            } catch (err) {
-                console.error(err);
-                showNotification('❌ Ошибка при добавлении: ' + err.message, 'error');
+                // ===== ОТПРАВЛЯЕМ DELETE-ЗАПРОС =====
+                const candidate = document.getElementById('current-candidate').textContent;
+                fetch(`/add_sobes/score?candidate=${encodeURIComponent(candidate)}`, {
+                    method: 'DELETE'
+                })
+                .then(res => res.json())
+                .then(data => console.log('🗑️ Отмена:', data))
+                .catch(err => console.error('Ошибка:', err));
             }
-        });
+        }
 
-        // ============================================
-        // 2. РЕДАКТИРОВАНИЕ И УДАЛЕНИЕ (PATCH / DELETE)
-        // ============================================
-        document.getElementById('candidates-body').addEventListener('click', async function (e) {
-            const btn = e.target.closest('[data-action]');
-            if (!btn) return;
+        // ===== 5. ЗАВЕРШИТЬ (СОХРАНЕНИЕ В ТАБЛИЦУ) =====
+        function finishInterview() {
+            const candidate = document.getElementById('current-candidate').textContent;
+            const score = currentScore !== null ? currentScore : '—';
 
-            const id = btn.dataset.id;
-            const action = btn.dataset.action;
-            const row = btn.closest('tr');
+            if (confirm(`✅ Завершить собеседование для ${candidate}?`)) {
+                // ===== ОТПРАВЛЯЕМ POST-ЗАПРОС =====
+                fetch('/add_sobes/score', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        candidate: candidate,
+                        score: currentScore !== null ? currentScore : null,
+                        status: 'completed'
+                    })
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error('Ошибка сервера');
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('✅ Собеседование завершено:', data);
+                    showNotification(`✅ Собеседование завершено!`, 'success');
 
-            // ===== УДАЛЕНИЕ =====
-            if (action === 'delete') {
-                if (!confirm('Удалить кандидата?')) return;
-
-                try {
-                    const res = await fetch(`/add_sobes/users/${id}`, {
-                        method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-
-                    if (!res.ok) {
-                        const err = await res.json();
-                        throw new Error(err.detail || 'Ошибка удаления');
+                    // Обновляем баллы в таблице
+                    const rows = document.querySelectorAll('#candidates-body tr');
+                    for (let row of rows) {
+                        const nameCell = row.querySelectorAll('td')[1];
+                        if (nameCell && nameCell.textContent.trim() === candidate) {
+                            const scoreCell = row.querySelectorAll('td')[5];
+                            if (scoreCell) {
+                                scoreCell.textContent = currentScore !== null ? currentScore : '—';
+                            }
+                            break;
+                        }
                     }
+                })
+                .catch(err => {
+                    console.error('❌ Ошибка:', err);
+                    showNotification('❌ Ошибка при завершении', 'error');
+                });
 
-                    row.remove();
-                    showNotification('🗑️ Кандидат удалён', 'success');
-
-                } catch (err) {
-                    console.error(err);
-                    showNotification('❌ Ошибка при удалении: ' + err.message, 'error');
-                }
+                // Сбрасываем
+                currentScore = null;
+                document.getElementById('score-display').textContent = 'Оценка: —';
+                document.querySelectorAll('.score-btn').forEach(b => {
+                    b.style.outline = 'none';
+                    b.style.boxShadow = 'none';
+                });
             }
+        }
 
-            // ===== РЕДАКТИРОВАНИЕ =====
-            if (action === 'edit') {
-                const cells = row.querySelectorAll('td');
-                const currentName = cells[1].textContent.trim();
-
-                const newName = prompt('Введите новый никнейм:', currentName);
-                if (!newName || newName === currentName) return;
-
-                try {
-                    const res = await fetch(`/add_sobes/users/${id}`, {
-                        method: 'PATCH',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username: newName })
-                    });
-
-                    if (!res.ok) {
-                        const err = await res.json();
-                        throw new Error(err.detail || 'Ошибка редактирования');
-                    }
-
-                    cells[1].textContent = newName;
-                    showNotification('✅ Никнейм обновлён!', 'success');
-
-                } catch (err) {
-                    console.error(err);
-                    showNotification('❌ Ошибка при редактировании: ' + err.message, 'error');
-                }
-            }
-        });
-
-        // ============================================
-        // 3. УВЕДОМЛЕНИЯ (TOAST NOTIFICATIONS)
-        // ============================================
+        // ===== 6. УВЕДОМЛЕНИЯ =====
         function showNotification(message, type = 'success') {
             const colors = {
                 success: '#238636',
@@ -263,7 +283,6 @@
                 warning: '#d29922'
             };
 
-            // Удаляем предыдущее уведомление
             const existing = document.querySelector('.notification-toast');
             if (existing) existing.remove();
 
@@ -293,28 +312,78 @@
                 toast.style.opacity = '0';
                 toast.style.transition = 'opacity 0.3s';
                 setTimeout(() => toast.remove(), 300);
-            }, 3500);
+            }, 3000);
         }
 
-        // ============================================
-        // 4. ДОБАВЛЯЕМ CSS ДЛЯ АНИМАЦИИ
-        // ============================================
+        // ===== 7. ДОБАВЛЕНИЕ =====
+        document.querySelector('.interview-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const username = formData.get('username');
+            if (!username.trim()) return;
+
+            const res = await fetch(this.action, { method: 'POST', body: formData });
+            if (!res.ok) return alert('Ошибка');
+
+            const user = await res.json();
+            const tbody = document.getElementById('candidates-body');
+            const row = document.createElement('tr');
+            const newId = tbody.children.length + 1;
+            row.innerHTML = `
+                <td>${newId}</td>
+                <td>${user.username || username}</td>
+                <td>—</td>
+                <td>—</td>
+                <td>${new Date().toLocaleString()}</td>
+                <td class="score-cell">—</td>
+                <td><span class="status-badge status-waiting">⏳ Ожидает</span></td>
+                <td>
+                    <button class="action-btn edit-btn" data-id="${newId}" data-action="edit">✏️</button>
+                    <button class="action-btn danger" data-id="${newId}" data-action="delete">🗑️</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+            this.querySelector('input[name="username"]').value = '';
+        });
+
+        // ===== 8. УДАЛЕНИЕ И РЕДАКТИРОВАНИЕ =====
+        document.getElementById('candidates-body').addEventListener('click', async function(e) {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+
+            const id = btn.dataset.id;
+            const action = btn.dataset.action;
+            const row = btn.closest('tr');
+
+            if (action === 'delete') {
+                if (!confirm('Удалить?')) return;
+                const res = await fetch(`/add_sobes/users/${id}`, { method: 'DELETE' });
+                if (res.ok) row.remove();
+            }
+
+            if (action === 'edit') {
+                const newName = prompt('Новый ник:', row.querySelectorAll('td')[1].textContent.trim());
+                if (!newName) return;
+                const res = await fetch(`/add_sobes/users/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: newName })
+                });
+                if (res.ok) row.querySelectorAll('td')[1].textContent = newName;
+            }
+        });
+
+        // CSS для анимации
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideIn {
                 from { transform: translateX(50px); opacity: 0; }
                 to { transform: translateX(0); opacity: 1; }
             }
-            .action-btn {
-                cursor: pointer;
-                transition: all 0.15s ease;
-            }
-            .action-btn:hover {
-                transform: scale(1.05);
-            }
-            .action-btn:active {
-                transform: scale(0.95);
-            }
+            .score-btn { cursor: pointer; transition: all 0.15s ease; }
+            .score-btn:hover { transform: scale(1.08); }
+            .action-btn { cursor: pointer; transition: all 0.15s ease; }
+            .action-btn:hover { transform: scale(1.05); }
         `;
         document.head.appendChild(style);
     </script>

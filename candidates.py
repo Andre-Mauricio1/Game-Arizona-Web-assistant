@@ -23,12 +23,20 @@ class Users_Patch(BaseModel):
     rang: int | None = None
     fraction: str | None = None
 
-
+class Users_Delete(BaseModel):
+    id: str | None = None
+    username: str | None = None
+    rang: int | None = None
+    fraction: str | None = None
+    lvl: int | None = None
+    data_time: str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # год-месяц-день час:минута:секунда
 
 class add_candidates_post(BaseModel):
     username: str
+    # rang: int | None = None
+    # fraction: str | None = None
 
-users: list[User] = []
+users: List[User] = []
 
 
 
@@ -62,4 +70,12 @@ async def users_patch(payload: Users_Patch, user_id: str):
             if payload.fraction is not None:
                 user.fraction = payload.fraction
             return user
+    return None
+
+
+async def users_delete(payload: Users_Delete, user_id: str):
+    for user in users:
+        if user.id == str(user_id):
+            users.remove(user)
+        return user
     return None

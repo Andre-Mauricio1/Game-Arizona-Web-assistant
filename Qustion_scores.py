@@ -15,17 +15,16 @@ app = FastAPI()
 class Question(BaseModel):
     question: str | None
     scores: float
-    lvl: int =1
-
+    lvl: int
 class Add_scores(BaseModel):
     scores: float
-    lvl: int =1
+    lvl: int
 
 
 class ADD_Question(BaseModel):
     Question: str
     scores: float
-    lvl: int =1
+    lvl: int
 
 # question_super = []
 score = []
@@ -33,7 +32,7 @@ score = []
 
 #
 # @app.get("/add_scores")
-async def main():
+async def main_score():
     return score
 
 # @app.post("/add_scores")
@@ -43,8 +42,9 @@ async def scores_add(payload: Add_scores):
         new_score = Question(question=None, scores=payload.scores, lvl=payload.lvl)
         score.append(payload.scores)
         max_score = max(score)
-        print(f'Score: {score}, max_score: {max_score}' )
-
+        sum_score = sum(score)
+        print(f'Score: {score}, max_score: {max_score} , sum_score: {sum_score}' )
+    return  score, max_score, sum_score
 
 async def question_func_get():
     """Меняется вопрос РАНДОМНО"""

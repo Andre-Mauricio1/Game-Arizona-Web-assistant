@@ -137,7 +137,7 @@
     </div>
 
     <script>
-        // ===== 1. КНОПКИ ОЦЕНОК (GET-ЗАПРОС) =====
+        // ===== 1. КНОПКИ ОЦЕНОК (POST-ЗАПРОС) =====
         let currentScore = null;
         let currentCandidateName = 'Andre_Mauricio';
 
@@ -152,21 +152,28 @@
             });
             document.querySelector(`.score-btn[data-score="${score}"]`).style.outline = '3px solid #58a6ff';
 
-            // ===== ОТПРАВЛЯЕМ GET-ЗАПРОС =====
+            // ===== ОТПРАВЛЯЕМ POST-ЗАПРОС =====
             const candidate = document.getElementById('current-candidate').textContent;
-            fetch(`/add_sobes/score?candidate=${encodeURIComponent(candidate)}&score=${score}`, {
-                method: 'GET'
+            fetch('/add_sobes/score', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    candidate: candidate,
+                    score: score
+                })
             })
             .then(res => {
                 if (!res.ok) throw new Error('Ошибка сервера');
                 return res.json();
             })
             .then(data => {
-                console.log('✅ Оценка отправлена:', data);
-                showNotification(`✅ Оценка ${score} отправлена!`, 'success');
+                console.log('✅ Оценка отправлена (POST):', data);
+                showNotification(`✅ Оценка ${score} выставлена для ${candidate}`, 'success');
             })
             .catch(err => {
-                console.error('❌ Ошибка:', err);
+                console.error('❌ Ошибка POST-запроса:', err);
                 showNotification('❌ Ошибка при отправке оценки', 'error');
             });
         }
@@ -214,7 +221,7 @@
 
                 // ===== ОТПРАВЛЯЕМ DELETE-ЗАПРОС =====
                 const candidate = document.getElementById('current-candidate').textContent;
-                fetch(`/add_sobes/score?candidate=${encodeURIComponent(candidate)}`, {
+                fetch(`/add_sobes/score/${encodeURIComponent(candidate)}`, {
                     method: 'DELETE'
                 })
                 .then(res => res.json())
@@ -226,16 +233,16 @@
         // ===== 5. ЗАВЕРШИТЬ (СОХРАНЕНИЕ В ТАБЛИЦУ) =====
         function finishInterview() {
             const candidate = document.getElementById('current-candidate').textContent;
-            const score = currentScore !== null ? currentScore : '—';
+            const score = currentScore !== null ? currentScore : null;
 
             if (confirm(`✅ Завершить собеседование для ${candidate}?`)) {
-                // ===== ОТПРАВЛЯЕМ POST-ЗАПРОС =====
-                fetch('/add_sobes/score', {
+                // ===== ОТПРАВЛЯЕМ POST-ЗАПРОС НА ЗАВЕРШЕНИЕ =====
+                fetch('/add_sobes/finish', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         candidate: candidate,
-                        score: currentScore !== null ? currentScore : null,
+                        score: score,
                         status: 'completed'
                     })
                 })
@@ -245,7 +252,7 @@
                 })
                 .then(data => {
                     console.log('✅ Собеседование завершено:', data);
-                    showNotification(`✅ Собеседование завершено!`, 'success');
+                    showNotification(`✅ Собеседование для ${candidate} завершено!`, 'success');
 
                     // Обновляем баллы в таблице
                     const rows = document.querySelectorAll('#candidates-body tr');
@@ -254,7 +261,7 @@
                         if (nameCell && nameCell.textContent.trim() === candidate) {
                             const scoreCell = row.querySelectorAll('td')[5];
                             if (scoreCell) {
-                                scoreCell.textContent = currentScore !== null ? currentScore : '—';
+                                scoreCell.textContent = score !== null ? score : '—';
                             }
                             break;
                         }

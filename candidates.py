@@ -1,7 +1,34 @@
+from contextlib import asynccontextmanager
 from uuid import uuid4
+from fastapi import FastAPI, Depends
 from pydantic import BaseModel
 from datetime import datetime
 from typing import List, Optional
+from sqlalchemy.orm import Session
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import declarative_base, DeclarativeBase, Mapped, mapped_column, sessionmaker
+from uvicorn import lifespan
+
+
+DATABASE_URL = "postgresql://postgres:admin@localhost:5432/postgres"
+engine = create_engine(DATABASE_URL)
+session = sessionmaker(bind=engine)
+
+
+
+class Base(DeclarativeBase):
+    id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid4()))
+
+class UserORM(Base):
+    __tablename__ = 'users'
+
+    username: Mapped[str]
+    rang: Mapped[int]
+    fraction: Mapped[str]
+    lvl: Mapped[int]
+    data_time: Mapped[str]
+
+
 
 
 class User(BaseModel):
@@ -23,13 +50,6 @@ class Users_Patch(BaseModel):
     rang: int | None = None
     fraction: str | None = None
 
-class Users_Delete(BaseModel):
-    id: str | None = None
-    username: str | None = None
-    rang: int | None = None
-    fraction: str | None = None
-    lvl: int | None = None
-    data_time: str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # год-месяц-день час:минута:секунда
 
 class add_candidates_post(BaseModel):
     username: str
@@ -39,17 +59,24 @@ class add_candidates_post(BaseModel):
 users: List[User] = []
 
 
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    Base.metadata.create_all(engine)
+    yield
+async def get_db():
+    with session() as db:
+        yield db
 
-async def window():
-    """Возращение списка users"""
-    print('Users ', users)
-    return users
 
+async def window(db: Session = Depends(get_db)):
+    """Возращение списка users(SELECT * FROM users)"""
+    users_db = db.scalars(select(UserORM)).all()
+    print('UsersDB ', users_db)
+    return users, users_db
 
 async def users_post(payload: Users_Post) -> User:
     """Добавление пользователей через main Form"""
-    new_user = User(id=str(uuid4()), username=payload.username, rang=payload.rang, lvl=0, fraction=payload.fraction, data_time=payload.time)
-    users.append(new_user)
+    new_user = User(username=payload.username, rang=payload.rang, lvl=0, fraction=payload.fraction, data_time=payload.time)
     return new_user
 
 
@@ -73,9 +100,9 @@ async def users_patch(payload: Users_Patch, user_id: str):
     return None
 
 
-async def users_delete(payload: Users_Delete, user_id: str):
-    for user in users:
-        if user.id == str(user_id):
-            users.remove(user)
-        return user
+async def users_delete(task_id: str):
+    for task in users:
+        if task.id == task_id:
+            users.remove(task)
+        return task
     return None

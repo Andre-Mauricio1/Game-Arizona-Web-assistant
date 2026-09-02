@@ -29,8 +29,6 @@ class UserORM(Base):
     data_time: Mapped[str]
 
 
-
-
 class User(BaseModel):
     id: str
     username: str

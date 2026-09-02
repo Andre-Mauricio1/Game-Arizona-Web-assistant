@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель - Оценка</title>
+    <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+    <div class="wrapper">
+        <!-- ===== ЛЕВОЕ МЕНЮ ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <span class="logo">⚡</span>
+                <span>Admins</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="sidebar-link">👥 Администрация</a>
+                <a href="#" class="sidebar-link">🟢 Онлайн</a>
+                <a href="/interview" class="sidebar-link is-active">☕ Собеседование</a>
+                <a href="#" class="sidebar-link">⏸️ Неактив</a>
+                <a href="#" class="sidebar-link">🏪 Магазин</a>
+            </nav>
+            <div class="sidebar-profile">
+                <div class="avatar">👤</div>
+                <div>
+                    <div class="profile-name">Andre_Mauricio</div>
+                    <div class="profile-role">Хелпер</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
+        <main class="content">
+            <!-- ===== КАРТОЧКА КАНДИДАТА ===== -->
+            <div class="interview-card">
+                <h2 class="interview-title">👤 Кандидат</h2>
+                <form class="interview-form" action="/add_sobes/users" method="post">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Никнейм кандидата</label>
+                            <input type="text" name="username" placeholder="Введите никнейм" required />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-register">➕ Добавить кандидата</button>
+                </form>
+            </div>
+
+            <!-- ===== БЛОК ОЦЕНКИ ===== -->
+            <div class="score-card">
+                <h3 class="score-title">📊 Оценка ответа</h3>
+
+                <div class="score-question">
+                    Вопрос: <span id="question-text">Что такое деморган?</span>
+                </div>
+
+                <div class="score-buttons">
+                    <button class="score-btn score-red" data-score="0">0</button>
+                    <button class="score-btn score-yellow" data-score="0.5">0.5</button>
+                    <button class="score-btn score-green" data-score="1">1</button>
+                </div>
+
+                <div class="score-nick">
+                    👤 Ник: <strong id="current-candidate">Andre_Mauricio</strong>
+                    <span id="score-display" style="margin-left: 20px; color: #58a6ff;">Оценка: —</span>
+                </div>
+
+                <div class="score-actions">
+                    <button class="action-btn" id="next-question">➡️ Следующий вопрос</button>
+                    <button class="action-btn" id="next-candidate">👤 Следующий кандидат</button>
+                    <button class="action-btn danger" id="cancel-interview">❌ Отмена</button>
+                    <button class="action-btn success" id="finish-interview">✅ Завершить собеседование</button>
+                </div>
+            </div>
+
+            <!-- ===== ТАБЛИЦА КАНДИДАТОВ ===== -->
+            <div class="table-wrapper">
+                <h3 class="table-title">📋 Список кандидатов</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Никнейм</th>
+                            <th>Ранг</th>
+                            <th>Фракция</th>
+                            <th>Дата</th>
+                            <th>Статус</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="candidates-body">
+                        <tr>
+                            <td>1</td>
+                            <td>Andre_Mauricio</td>
+                            <td>5</td>
+                            <td>Полиция</td>
+                            <td>2026-08-15 16:00</td>
+                            <td><span class="status-badge status-active">✅ Активен</span></td>
+                            <td>
+                                <button class="action-btn edit-btn" data-id="1" data-action="edit">✏️</button>
+                                <button class="action-btn danger" data-id="1" data-action="delete">🗑️</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Sebastian_Disney</td>
+                            <td>7</td>
+                            <td>ФБР</td>
+                            <td>2026-08-14 14:30</td>
+                            <td><span class="status-badge status-waiting">⏳ Ожидает</span></td>
+                            <td>
+                                <button class="action-btn edit-btn" data-id="2" data-action="edit">✏️</button>
+                                <button class="action-btn danger" data-id="2" data-action="delete">🗑️</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Don_Morrison</td>
+                            <td>6</td>
+                            <td>Медицина</td>
+                            <td>2026-08-13 12:00</td>
+                            <td><span class="status-badge status-completed">✅ Завершен</span></td>
+                            <td>
+                                <button class="action-btn edit-btn" data-id="3" data-action="edit">✏️</button>
+                                <button class="action-btn danger" data-id="3" data-action="delete">🗑️</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+        <script src="/js/main.js"></script>
+</body>
+</html>
+```

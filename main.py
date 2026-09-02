@@ -63,7 +63,7 @@ async def onlines():
 @app.get('/interview')
 async def interview() -> FileResponse:
     """2. Возращаем функцию, но туда вставляем ссылку """
-    return await File_Response1(r'C:\Users\админ\PycharmProjects\PythonProject2\sobes_index.html')
+    return await File_Response1(r'/static/html/sobes_index.html')
 
 
 
@@ -93,7 +93,7 @@ async def add_sobes(username: str = Form(...),rang: int = Form(...),fraction: st
     payload = Users_Post(username=username, rang=rang, fraction=fraction, time=time)
     result = await users_post(payload)
     print('Result ', result)
-    return  await File_Response1(r'C:\Users\админ\PycharmProjects\PythonProject2\sobes_index2.html')
+    return  await File_Response1(r'/static/html/sobes_index2.html')
 
 @app.post('/add_sobes/users', status_code=status.HTTP_201_CREATED)
 async def add_sobes(username: str = Form(...)) -> FileResponse:
